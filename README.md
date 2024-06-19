@@ -3,16 +3,18 @@
 ふりがなを自動で入力するためのSvelte Action
 
 ## Installation
+
 ```bash
 npm i svelte-autokana
 ```
 
 ## Usage
+
 ```svelte
 <script lang="ts">
-    import { autoKana } from 'svelte-autokana'
+	import { autoKana } from 'svelte-autokana'
 
-    let kanaInput: HTMLInputElement
+	let kanaInput: HTMLInputElement
 </script>
 
 <label for="name">名前</label>
@@ -24,7 +26,7 @@ npm i svelte-autokana
 
 ## Parameters
 
-| Name | Type | Default value | Description |
-| --- | --- | --- | --- |
-| kanaInput | `HTMLInputElement` | `undefined` | ふりがな用\<Input> |
-| katakana | `boolean` | `false` | `true`の場合、出力はカタカナ |
+| Name      | Type               | Default value | Description                  |
+| --------- | ------------------ | ------------- | ---------------------------- |
+| kanaInput | `HTMLInputElement` | `undefined`   | ふりがな用\<Input>           |
+| katakana  | `boolean`          | `false`       | `true`の場合、出力はカタカナ |
