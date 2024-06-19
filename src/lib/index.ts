@@ -31,7 +31,7 @@ export function autoKana(
 	})
 
 	// 変換確定
-	node.addEventListener('compositionend', (e) => {
+	node.addEventListener('compositionend', () => {
 		converted = target.value
 		pending = ''
 	})
