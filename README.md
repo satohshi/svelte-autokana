@@ -12,9 +12,8 @@ npm i svelte-autokana
 
 ```svelte
 <script lang="ts">
-	import { autoKana } from 'svelte-autokana'
-
-	let kanaInput: HTMLInputElement
+    import { autoKana } from 'svelte-autokana'
+    let kanaInput: HTMLInputElement
 </script>
 
 <label for="name">名前</label>
@@ -26,7 +25,7 @@ npm i svelte-autokana
 
 ## Parameters
 
-| Name      | Type               | Default value | Description                  |
-| --------- | ------------------ | ------------- | ---------------------------- |
-| kanaInput | `HTMLInputElement` | `undefined`   | ふりがな用\<Input>           |
-| katakana  | `boolean`          | `false`       | `true`の場合、出力はカタカナ |
+| Name      |        Type        | Default value | Description                  |
+| --------- | :----------------: | :-----------: | ---------------------------- |
+| kanaInput | `HTMLInputElement` |  `undefined`  | ふりがな用\<Input>           |
+| katakana  |     `boolean`      |    `false`    | `true`の場合、出力はカタカナ |
