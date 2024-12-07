@@ -1,13 +1,19 @@
 <script lang="ts">
 	import { autoKana } from '$lib/index.js'
 
-	let kanaInput: HTMLInputElement
+	let kanaInput = $state<HTMLInputElement>()!
+	let katakana = $state(false)
 </script>
 
 <div>
+	<label style="display: flex;">
+		<input type="checkbox" bind:checked={katakana} />
+		<span>カタカナ</span>
+	</label>
+
 	<label>
 		<span>名前</span>
-		<input type="text" use:autoKana={{ kanaInput }} />
+		<input type="text" use:autoKana={{ kanaInput, katakana }} />
 	</label>
 
 	<label>
@@ -20,7 +26,7 @@
 	div {
 		display: flex;
 		flex-direction: column;
-		gap: 2rem;
+		gap: 1rem;
 		max-width: 20rem;
 		padding: 1rem;
 	}

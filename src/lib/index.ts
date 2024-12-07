@@ -38,9 +38,6 @@ export function autoKana(
 	let converted = '' // 変換済みのかな
 	let pending = '' // 未確定のかな
 
-	// Svelte 4はbind前(i.e. kanaInputがundefined)にActionを呼んでしまうのため、bind後にupdate()でreassignできるようにする
-	let target = kanaInput
-
 	const toKatakana = (matches: string[]) => {
 		return matches.map((char) => {
 			return char === 'ー' ? char : String.fromCharCode(char.charCodeAt(0) + 96)
@@ -49,30 +46,35 @@ export function autoKana(
 
 	node.addEventListener('compositionupdate', (e) => {
 		const kana = e.data.match(HIRAGANA_REGEX) ?? []
-		if (kana.length !== e.data.length) return // 変換候補を選んでいる最中
+
+		// 変換候補を選んでいる最中
+		if (kana.length !== e.data.length) {
+			return
+		}
+
 		pending = (katakana ? toKatakana(kana) : kana).join('')
-		target.value = converted + pending
+		kanaInput.value = converted + pending
 	})
 
 	// 変換確定
 	node.addEventListener('compositionend', () => {
-		converted = target.value
+		converted = kanaInput.value
 		pending = ''
 	})
 
 	// 全部消したときは、かなも消す
 	node.addEventListener('input', () => {
 		if (node.value === '' && pending === '') {
-			target.value = ''
+			kanaInput.value = ''
 			converted = ''
 			pending = ''
 		}
 	})
 
 	return {
-		// Svelte 5では不要
-		update({ kanaInput }) {
-			target = kanaInput
+		update(newOptions) {
+			kanaInput = newOptions.kanaInput
+			katakana = newOptions.katakana ?? katakana
 		},
 	}
 }
