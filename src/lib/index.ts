@@ -50,13 +50,13 @@ export function autoKana(
 	let converted = '' // 変換済みのかな
 	let pending = '' // 未確定のかな
 
-	const toKatakana = (matches: string[]) => {
+	const toKatakana = (matches: string[]): string[] => {
 		return matches.map((char) => {
 			return char === 'ー' ? char : String.fromCharCode(char.charCodeAt(0) + 96)
 		})
 	}
 
-	node.addEventListener('compositionupdate', (e) => {
+	node.addEventListener('compositionupdate', (e): void => {
 		const kana = e.data.match(HIRAGANA_REGEX) ?? []
 
 		// 変換候補を選んでいる最中
@@ -69,13 +69,13 @@ export function autoKana(
 	})
 
 	// 変換確定
-	node.addEventListener('compositionend', () => {
+	node.addEventListener('compositionend', (): void => {
 		converted = kanaInput.value
 		pending = ''
 	})
 
 	// 全部消したときは、かなも消す
-	node.addEventListener('input', () => {
+	node.addEventListener('input', (): void => {
 		if (node.value === '' && pending === '') {
 			kanaInput.value = ''
 			converted = ''
@@ -84,7 +84,7 @@ export function autoKana(
 	})
 
 	return {
-		update(newOptions) {
+		update(newOptions): void {
 			kanaInput = newOptions.kanaInput
 			katakana = newOptions.katakana ?? katakana
 		},
