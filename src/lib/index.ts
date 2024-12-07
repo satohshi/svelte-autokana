@@ -75,7 +75,7 @@ export function autoKana(
 	})
 
 	// 全部消したときは、かなも消す
-	node.addEventListener('input', (): void => {
+	node.addEventListener('keyup', (): void => {
 		if (node.value === '' && pending === '') {
 			kanaInput.value = ''
 			converted = ''
