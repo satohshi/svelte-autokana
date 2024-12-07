@@ -1,3 +1,15 @@
+/**
+ * DO NOT "rune-ify" this action.
+ * It would require users to wrap the whole option object in $state() for it to work.
+ * i.e.
+ * let options = $state<Parameters<typeof autoKana>[1]>({
+ * 	kanaInput: null!,
+ * 	katakana: false,
+ * })
+ *
+ * Related issue: https://github.com/sveltejs/svelte/issues/10653
+ */
+
 import type { ActionReturn } from 'svelte/action'
 
 interface Parameter {
