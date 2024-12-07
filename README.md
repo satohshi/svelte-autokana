@@ -8,12 +8,21 @@
 npm i svelte-autokana
 ```
 
+```bash
+pnpm add svelte-autokana
+```
+
 ## Usage
 
 ```svelte
 <script lang="ts">
-    import { autoKana } from 'svelte-autokana'
-    let kanaInput: HTMLInputElement
+	import { autoKana } from 'svelte-autokana'
+
+	// runes mode
+	let kanaInput = $state<HTMLInputElement>()!
+
+	// legacy mode
+	let kanaInput: HTMLInputElement
 </script>
 
 <label for="name">名前</label>
