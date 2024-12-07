@@ -1,16 +1,4 @@
-/**
- * DO NOT "rune-ify" this action.
- * It would require users to wrap the whole option object in $state() for it to work.
- * i.e.
- * let options = $state<Parameters<typeof autoKana>[1]>({
- * 	kanaInput: null!,
- * 	katakana: false,
- * })
- *
- * Related issue: https://github.com/sveltejs/svelte/issues/10653
- */
-
-import type { ActionReturn } from 'svelte/action'
+import type { Action } from 'svelte/action'
 
 interface Parameter {
 	/** 読み仮名を入力するinput要素 */
@@ -41,10 +29,10 @@ interface Parameter {
  * </form>
  * ```
  */
-export function autoKana(
+export const autoKana: Action<HTMLInputElement, Parameter> = (
 	node: HTMLInputElement,
-	{ kanaInput, katakana = false }: Parameter
-): ActionReturn<Parameter> {
+	options: Parameter // do not destructure as per https://github.com/sveltejs/svelte/issues/10653
+) => {
 	const HIRAGANA_REGEX = /[ぁ-んー]/g
 
 	let converted = '' // 変換済みのかな
@@ -56,7 +44,7 @@ export function autoKana(
 		})
 	}
 
-	node.addEventListener('compositionupdate', (e): void => {
+	const handleCompositionUpdate = (e: CompositionEvent): void => {
 		const kana = e.data.match(HIRAGANA_REGEX) ?? []
 
 		// 変換候補を選んでいる最中
@@ -64,29 +52,37 @@ export function autoKana(
 			return
 		}
 
-		pending = (katakana ? toKatakana(kana) : kana).join('')
-		kanaInput.value = converted + pending
-	})
+		pending = (options.katakana ? toKatakana(kana) : kana).join('')
+		options.kanaInput.value = converted + pending
+	}
 
 	// 変換確定
-	node.addEventListener('compositionend', (): void => {
-		converted = kanaInput.value
+	const handleCompositionEnd = (): void => {
+		converted = options.kanaInput.value
 		pending = ''
-	})
+	}
 
 	// 全部消したときは、かなも消す
-	node.addEventListener('keyup', (): void => {
+	const handleKeyup = (): void => {
 		if (node.value === '' && pending === '') {
-			kanaInput.value = ''
+			options.kanaInput.value = ''
 			converted = ''
 			pending = ''
 		}
-	})
-
-	return {
-		update(newOptions): void {
-			kanaInput = newOptions.kanaInput
-			katakana = newOptions.katakana ?? katakana
-		},
 	}
+
+	$effect(() => {
+		converted = ''
+		pending = ''
+
+		node.addEventListener('compositionupdate', handleCompositionUpdate)
+		node.addEventListener('compositionend', handleCompositionEnd)
+		node.addEventListener('keyup', handleKeyup)
+
+		return () => {
+			node.removeEventListener('compositionupdate', handleCompositionUpdate)
+			node.removeEventListener('compositionend', handleCompositionEnd)
+			node.removeEventListener('keyup', handleKeyup)
+		}
+	})
 }
