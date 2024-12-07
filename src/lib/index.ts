@@ -1,10 +1,10 @@
 import type { ActionReturn } from 'svelte/action'
 
 interface Parameter {
-	/** かなを入力するinput */
+	/** 読み仮名を入力するinput要素 */
 	kanaInput: HTMLInputElement
 	/**
-	 * カタカナに変換するか
+	 * 読み仮名をカタカナで出力するか
 	 * @defaultValue false
 	 *  */
 	katakana?: boolean
