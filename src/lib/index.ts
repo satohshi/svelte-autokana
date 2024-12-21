@@ -56,6 +56,11 @@ export function autoKana(
 		})
 	}
 
+	// ユーザーがかなのinputを手動で更新したときに、それを考慮する
+	node.addEventListener('focus', () => {
+		converted = kanaInput.value
+	})
+
 	node.addEventListener('compositionupdate', (e): void => {
 		const kana = e.data.match(HIRAGANA_REGEX) ?? []
 
