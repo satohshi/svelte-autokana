@@ -12,7 +12,7 @@
 
 import type { ActionReturn } from 'svelte/action'
 
-interface Parameter {
+export interface Parameter {
 	/** 読み仮名を入力するinput要素 */
 	kanaInput: HTMLInputElement
 	/**
