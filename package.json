@@ -1,6 +1,6 @@
 {
 	"name": "svelte-autokana",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "Svelte action to automatically fill in the kana field",
 	"author": "satohshi",
 	"repository": {
