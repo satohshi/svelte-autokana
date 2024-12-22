@@ -17,7 +17,7 @@
 	</label>
 
 	<label>
-		<span>名前（かな）</span>
+		<span>名前（{options.katakana ? 'カナ' : 'かな'}）</span>
 		<input type="text" use:nameKana />
 	</label>
 </div>
