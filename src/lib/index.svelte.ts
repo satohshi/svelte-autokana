@@ -1,97 +1,82 @@
-/**
- * DO NOT "rune-ify" this action.
- * It would require users to wrap the whole option object in $state() for it to work.
- * i.e.
- * let options = $state<Parameters<typeof autoKana>[1]>({
- * 	kanaInput: null!,
- * 	katakana: false,
- * })
- *
- * Related issue: https://github.com/sveltejs/svelte/issues/10653
- */
-
-import type { ActionReturn } from 'svelte/action'
-
-export interface Parameter {
-	/** 読み仮名を入力するinput要素 */
-	kanaInput: HTMLInputElement
-	/**
-	 * 読み仮名をカタカナで出力するか
-	 * @defaultValue false
-	 *  */
-	katakana?: boolean
-}
+import type { Action } from 'svelte/action'
 
 /**
  * ふりがなを自動で入力するためのSvelte Action
  *
- * @param node - かなを取得する元のinput要素
- * @param options - Actionオプション
- * @param options.kanaInput - 読み仮名を入力するinput要素
+ * @param options - オプション
  * @param options.katakana - 読み仮名をカタカナで出力するか (デフォルト: `false`)
+ *
+ * @returns [かなを取得する元のinput用アクション, 読み仮名を出力する先のinput用アクション]
  *
  * @example
  * ```svelte
- * <form>
- * 	<label for="name">名前</label>
- * 	<input id="name" type="text" use:autoKana={{ kanaInput }} />
+ * <script>
+ *   import { createAutoKana } from 'svelte-autokana'
+ *   const [nameAction, kanaAction] = createAutoKana()
+ * </script>
  *
- * 	<label for="nameKana">名前（かな）</label>
- * 	<input id="nameKana" type="text" bind:this={kanaInput} />
- * </form>
+ * <input use:nameAction type="text" name="name" />
+ * <input use:kanaAction type="text" name="nameKana" />
  * ```
  */
-export function autoKana(
-	node: HTMLInputElement,
-	{ kanaInput, katakana = false }: Parameter
-): ActionReturn<Parameter> {
-	const HIRAGANA_REGEX = /[ぁ-んー]/g
+export const createAutoKana = (options?: {
+	katakana: boolean
+}): [Action<HTMLInputElement>, Action<HTMLInputElement>] => {
+	let furigana = $state('')
 
 	let converted = '' // 変換済みのかな
 	let pending = '' // 未確定のかな
 
-	const toKatakana = (matches: string[]): string[] => {
-		return matches.map((char) => {
-			return char === 'ー' ? char : String.fromCharCode(char.charCodeAt(0) + 96)
-		})
-	}
+	return [
+		// かなを取得する元のinput用アクション
+		(node: HTMLInputElement) => {
+			const toKatakana = (matches: string[]): string[] => {
+				return matches.map((char) => {
+					return char === 'ー' ? char : String.fromCharCode(char.charCodeAt(0) + 96)
+				})
+			}
 
-	// ユーザーがかなのinputを手動で更新したときに、それを考慮する
-	node.addEventListener('focus', () => {
-		converted = kanaInput.value
-	})
+			// ひらがなで入力中
+			node.addEventListener('compositionupdate', (e) => {
+				const kana = e.data.match(/[ぁ-んー]/g) ?? []
 
-	node.addEventListener('compositionupdate', (e): void => {
-		const kana = e.data.match(HIRAGANA_REGEX) ?? []
+				// 変換候補を選んでいる最中
+				if (kana.length !== e.data.length) {
+					return
+				}
 
-		// 変換候補を選んでいる最中
-		if (kana.length !== e.data.length) {
-			return
-		}
+				pending = (options?.katakana ? toKatakana(kana) : kana).join('')
+				furigana = converted + pending
+			})
 
-		pending = (katakana ? toKatakana(kana) : kana).join('')
-		kanaInput.value = converted + pending
-	})
+			// 変換確定
+			node.addEventListener('compositionend', () => {
+				converted = furigana
+				pending = ''
+			})
 
-	// 変換確定
-	node.addEventListener('compositionend', (): void => {
-		converted = kanaInput.value
-		pending = ''
-	})
-
-	// 全部消したときは、かなも消す
-	node.addEventListener('keyup', (): void => {
-		if (node.value === '' && pending === '') {
-			kanaInput.value = ''
-			converted = ''
-			pending = ''
-		}
-	})
-
-	return {
-		update(newOptions): void {
-			kanaInput = newOptions.kanaInput
-			katakana = newOptions.katakana ?? katakana
+			// 全部消したときは、かなも消す
+			node.addEventListener('keyup', () => {
+				if (node.value === '' && pending === '') {
+					furigana = ''
+					converted = ''
+					pending = ''
+				}
+			})
 		},
-	}
+
+		// フリガナを出力する先のinput用アクション
+		(node: HTMLInputElement) => {
+			node.addEventListener('input', () => {
+				furigana = node.value
+				converted = node.value
+			})
+
+			$effect(() => {
+				if (node.value !== furigana) {
+					node.value = furigana
+				}
+			})
+		},
+	]
 }

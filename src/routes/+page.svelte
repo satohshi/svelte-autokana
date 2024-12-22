@@ -1,25 +1,33 @@
 <script lang="ts">
-	import { autoKana } from '$lib/index.js'
+	import { createAutoKana } from '$lib/index.svelte.js'
 
-	let kanaInput = $state<HTMLInputElement>()!
-	let katakana = $state(false)
+	// let show = $state(true)
+
+	const options = $state({ katakana: false })
+
+	const [nameSource, nameKana] = createAutoKana(options)
 </script>
 
 <div>
 	<label style="display: flex;">
-		<input type="checkbox" bind:checked={katakana} />
+		<input type="checkbox" bind:checked={options.katakana} />
 		<span>カタカナ</span>
 	</label>
 
 	<label>
 		<span>名前</span>
-		<input type="text" use:autoKana={{ kanaInput, katakana }} />
+		<input type="text" use:nameSource />
 	</label>
 
 	<label>
 		<span>名前（かな）</span>
-		<input type="text" bind:this={kanaInput} />
+		<input type="text" use:nameKana />
 	</label>
+
+	<!-- <input type="checkbox" bind:checked={show} />
+	{#if show}
+		<input type="text" use:nameKana />
+	{/if} -->
 </div>
 
 <style>
