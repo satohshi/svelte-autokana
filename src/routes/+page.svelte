@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { createAutoKana } from '$lib/index.svelte.js'
+	import { createAutoKana, type Options } from '$lib/index.svelte.js'
 
-	const options = $state({ katakana: false })
+	const options = $state<Options>({ katakana: false })
 	const [nameSource, nameKana] = createAutoKana(options)
 </script>
 
