@@ -20,6 +20,7 @@ import type { Action } from 'svelte/action'
  * ```
  */
 export const createAutoKana = (options?: {
+	/** 読み仮名をカタカナで出力するか (デフォルト: `false`) */
 	katakana: boolean
 }): [Action<HTMLInputElement>, Action<HTMLInputElement>] => {
 	let furigana = $state('')
