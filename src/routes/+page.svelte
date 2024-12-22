@@ -1,10 +1,7 @@
 <script lang="ts">
 	import { createAutoKana } from '$lib/index.svelte.js'
 
-	// let show = $state(true)
-
 	const options = $state({ katakana: false })
-
 	const [nameSource, nameKana] = createAutoKana(options)
 </script>
 
@@ -23,11 +20,6 @@
 		<span>名前（かな）</span>
 		<input type="text" use:nameKana />
 	</label>
-
-	<!-- <input type="checkbox" bind:checked={show} />
-	{#if show}
-		<input type="text" use:nameKana />
-	{/if} -->
 </div>
 
 <style>
