@@ -1,6 +1,6 @@
 # svelte-autokana
 
-ふりがなを自動で入力するためのSvelte Action (Svelte 5.0.0+)
+ふりがなを自動で入力するためのSvelte Action
 
 ## Installation
 
