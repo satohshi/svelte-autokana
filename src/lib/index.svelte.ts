@@ -36,40 +36,60 @@ export const createAutoKana = (options?: {
 				})
 			}
 
-			// ひらがなで入力中
-			node.addEventListener('compositionupdate', (e) => {
-				const kana = e.data.match(/[ぁ-んー]/g) ?? []
+			const handlers = {
+				// ひらがなで入力中
+				compositionupdate: (e: CompositionEvent): void => {
+					const kana = e.data.match(/[ぁ-んー]/g) ?? []
 
-				// 変換候補を選んでいる最中
-				if (kana.length !== e.data.length) {
-					return
-				}
+					// 変換候補を選んでいる最中
+					if (kana.length !== e.data.length) return
 
-				pending = (options?.katakana ? toKatakana(kana) : kana).join('')
-				furigana = converted + pending
-			})
+					pending = (options?.katakana ? toKatakana(kana) : kana).join('')
+					furigana = converted + pending
+				},
 
-			// 変換確定
-			node.addEventListener('compositionend', () => {
-				converted = furigana
-				pending = ''
-			})
-
-			// 全部消したときは、かなも消す
-			node.addEventListener('keyup', () => {
-				if (node.value === '' && pending === '') {
-					furigana = ''
-					converted = ''
+				// 変換確定
+				compositionend: (): void => {
+					converted = furigana
 					pending = ''
+				},
+
+				// 全部消したときは、かなも消す
+				keyup: (): void => {
+					if (node.value === '' && pending === '') {
+						furigana = ''
+						converted = ''
+						pending = ''
+					}
+				},
+			}
+
+			$effect(() => {
+				node.addEventListener('compositionupdate', handlers.compositionupdate)
+				node.addEventListener('compositionend', handlers.compositionend)
+				node.addEventListener('keyup', handlers.keyup)
+
+				return () => {
+					node.removeEventListener('compositionupdate', handlers.compositionupdate)
+					node.removeEventListener('compositionend', handlers.compositionend)
+					node.removeEventListener('keyup', handlers.keyup)
 				}
 			})
 		},
 
 		// フリガナを出力する先のinput用アクション
 		(node: HTMLInputElement) => {
-			node.addEventListener('input', () => {
+			const handleInput = (): void => {
 				furigana = node.value
 				converted = node.value
+			}
+
+			$effect(() => {
+				node.addEventListener('input', handleInput)
+
+				return () => {
+					node.removeEventListener('input', handleInput)
+				}
 			})
 
 			$effect(() => {
