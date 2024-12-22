@@ -1,5 +1,16 @@
 # svelte-autokana
 
+## 0.2.0
+
+### Minor Changes
+
+- 67da2a0: return two separate actions for each input
+
+### Patch Changes
+
+- b2990a2: remove svelte 4 support to utilize runes
+- 79d29c9: add option to specify behaviour when the input is cleared
+
 ## 0.1.1
 
 ### Patch Changes
