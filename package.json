@@ -32,7 +32,7 @@
 		"!dist/**/*.spec.*"
 	],
 	"peerDependencies": {
-		"svelte": "^4.0.0 || ^5.0.0"
+		"svelte": "^5.0.0"
 	},
 	"devDependencies": {
 		"@changesets/cli": "^2.27.11",
