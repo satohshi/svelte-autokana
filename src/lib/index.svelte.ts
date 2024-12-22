@@ -1,5 +1,12 @@
 import type { Action } from 'svelte/action'
 
+export interface Options {
+	/** 読み仮名をカタカナで出力するか (デフォルト: `false`) */
+	katakana?: boolean
+	/** 元のinputを空にしたときに、かなも消すか (デフォルト: `true`) */
+	clearWhenEmpty?: boolean
+}
+
 /**
  * ふりがなを自動で入力するためのSvelte Action
  *
@@ -19,10 +26,9 @@ import type { Action } from 'svelte/action'
  * <input use:kanaAction type="text" name="nameKana" />
  * ```
  */
-export const createAutoKana = (options?: {
-	/** 読み仮名をカタカナで出力するか (デフォルト: `false`) */
-	katakana: boolean
-}): [Action<HTMLInputElement>, Action<HTMLInputElement>] => {
+export const createAutoKana = (
+	options?: Options
+): [Action<HTMLInputElement>, Action<HTMLInputElement>] => {
 	let furigana = $state('')
 
 	let converted = '' // 変換済みのかな
@@ -68,7 +74,9 @@ export const createAutoKana = (options?: {
 			$effect(() => {
 				node.addEventListener('compositionupdate', handlers.compositionupdate)
 				node.addEventListener('compositionend', handlers.compositionend)
-				node.addEventListener('keyup', handlers.keyup)
+				if (options?.clearWhenEmpty ?? true) {
+					node.addEventListener('keyup', handlers.keyup)
+				}
 
 				return () => {
 					node.removeEventListener('compositionupdate', handlers.compositionupdate)

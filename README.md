@@ -30,6 +30,7 @@ pnpm add svelte-autokana
 
 ## Parameters
 
-| Name     |   Type    | Default value | Description                  |
-| -------- | :-------: | :-----------: | ---------------------------- |
-| katakana | `boolean` |    `false`    | `true`の場合、出力はカタカナ |
+| Name           |   Type    | Default value | Description                                 |
+| -------------- | :-------: | :-----------: | ------------------------------------------- |
+| katakana       | `boolean` |    `false`    | `true`の場合、出力はカタカナ                |
+| clearWhenEmpty | `boolean` |    `true`     | 元のinputを空にしたときに、かなも空にするか |
