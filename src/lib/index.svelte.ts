@@ -43,62 +43,66 @@ export const createAutoKana = (
 				})
 			}
 
-			const handlers = {
+			$effect(() => {
+				const controller = new AbortController()
+
 				// ひらがなで入力中
-				compositionupdate: (e: CompositionEvent): void => {
-					const kana = e.data.match(/[ぁ-んー]/g) ?? []
+				node.addEventListener(
+					'compositionupdate',
+					(e) => {
+						const kana = e.data.match(/[ぁ-んー]/g) ?? []
 
-					// 変換候補を選んでいる最中
-					if (kana.length !== e.data.length) return
+						// 変換候補を選んでいる最中
+						if (kana.length !== e.data.length) return
 
-					pending = (options?.katakana ? toKatakana(kana) : kana).join('')
-					furigana = converted + pending
-				},
+						pending = (options?.katakana ? toKatakana(kana) : kana).join('')
+						furigana = converted + pending
+					},
+					{ signal: controller.signal }
+				)
 
 				// 変換確定
-				compositionend: (): void => {
-					converted = furigana
-					pending = ''
-				},
-
-				// 全部消したときは、かなも消す
-				keyup: (): void => {
-					if (node.value === '' && pending === '') {
-						furigana = ''
-						converted = ''
+				node.addEventListener(
+					'compositionend',
+					() => {
+						converted = furigana
 						pending = ''
-					}
-				},
-			}
+					},
+					{ signal: controller.signal }
+				)
 
-			$effect(() => {
-				node.addEventListener('compositionupdate', handlers.compositionupdate)
-				node.addEventListener('compositionend', handlers.compositionend)
 				if (options?.clearWhenEmpty ?? true) {
-					node.addEventListener('keyup', handlers.keyup)
+					// 全部消したときは、かなも消す
+					node.addEventListener(
+						'input',
+						() => {
+							setTimeout(() => {
+								if (node.value === '' && pending === '') {
+									furigana = ''
+									converted = ''
+									pending = ''
+								}
+							}, 0)
+						},
+						{ signal: controller.signal }
+					)
 				}
 
-				return () => {
-					node.removeEventListener('compositionupdate', handlers.compositionupdate)
-					node.removeEventListener('compositionend', handlers.compositionend)
-					node.removeEventListener('keyup', handlers.keyup)
-				}
+				return () => controller.abort()
 			})
 		},
 
 		// フリガナを出力する先のinput用アクション
 		(node: HTMLInputElement) => {
-			const handleInput = (): void => {
-				furigana = node.value
-				converted = node.value
-			}
-
 			$effect(() => {
-				node.addEventListener('input', handleInput)
+				const controller = new AbortController()
 
-				return () => {
-					node.removeEventListener('input', handleInput)
-				}
+				node.addEventListener('input', (): void => {
+					furigana = node.value
+					converted = node.value
+				})
+
+				return () => controller.abort()
 			})
 
 			$effect(() => {
