@@ -16,9 +16,9 @@ pnpm add svelte-autokana
 
 ```svelte
 <script lang="ts">
-	import { createAutoKana } from 'svelte-autokana'
+    import { createAutoKana } from 'svelte-autokana'
 
-	const [nameAction, kanaAction] = createAutoKana()
+    const [nameAction, kanaAction] = createAutoKana()
 </script>
 
 <label for="name">名前</label>
