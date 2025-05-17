@@ -97,10 +97,14 @@ export const createAutoKana = (
 			$effect(() => {
 				const controller = new AbortController()
 
-				node.addEventListener('input', (): void => {
-					furigana = node.value
-					converted = node.value
-				})
+				node.addEventListener(
+					'input',
+					(): void => {
+						furigana = node.value
+						converted = node.value
+					},
+					{ signal: controller.signal }
+				)
 
 				return () => controller.abort()
 			})
