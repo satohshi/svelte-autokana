@@ -1,5 +1,16 @@
 # svelte-autokana
 
+## 0.3.0
+
+### Minor Changes
+
+- c9ec63e: utilize attachments instead of actions
+- 8c8f55f: change syntax for options
+
+### Patch Changes
+
+- 39d68e4: fix insufficient cleanup
+
 ## 0.2.0
 
 ### Minor Changes
