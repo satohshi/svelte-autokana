@@ -1,8 +1,8 @@
 import type { Attachment } from 'svelte/attachments'
 
 export interface Options {
-	/** 読み仮名をカタカナで出力するか (デフォルト: `false`) */
-	katakana?: boolean
+	/** ひらがなかカタカナか (デフォルト: `hiragana`) */
+	mode?: 'hiragana' | 'katakana'
 	/** 元のinputを空にしたときに、かなも消すか (デフォルト: `true`) */
 	clearWhenEmpty?: boolean
 }
@@ -11,7 +11,7 @@ export interface Options {
  * ふりがなを自動で入力するためのSvelte Attachment
  *
  * @param options - オプション
- * @param options.katakana - 読み仮名をカタカナで出力するか (デフォルト: `false`)
+ * @param options.mode - ひらがなかカタカナか (デフォルト: `hiragana`)
  *
  * @returns [かなを取得する元のinput用アタッチメント, 読み仮名を出力する先のinput用アタッチメント]
  *
@@ -61,7 +61,7 @@ export function createAutoKana(
 						// 変換候補を選んでいる最中
 						if (kana.length !== e.data.length) return
 
-						pending = (options?.katakana ? toKatakana(kana) : kana).join('')
+						pending = (options?.mode === 'katakana' ? toKatakana(kana) : kana).join('')
 						furigana = converted + pending
 					},
 					{ signal: controller.signal }
