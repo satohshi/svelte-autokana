@@ -1,6 +1,6 @@
 # svelte-autokana
 
-ふりがなを自動で入力するためのSvelte Action
+ふりがなを自動で入力するためのSvelte Attachment
 
 ## Installation
 
@@ -18,14 +18,14 @@ pnpm add svelte-autokana
 <script lang="ts">
     import { createAutoKana } from 'svelte-autokana'
 
-    const [nameAction, kanaAction] = createAutoKana()
+    const [nameKanji, nameKana] = createAutoKana()
 </script>
 
 <label for="name">名前</label>
-<input id="name" type="text" use:nameAction />
+<input id="nameKanji" type="text" {@attach nameKanji} />
 
 <label for="nameKana">名前（かな）</label>
-<input id="nameKana" type="text" use:kanaAction />
+<input id="nameKana" type="text" {@attach nameKana} />
 ```
 
 ## Parameters

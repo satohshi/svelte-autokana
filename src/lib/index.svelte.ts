@@ -1,4 +1,4 @@
-import type { Action } from 'svelte/action'
+import type { Attachment } from 'svelte/attachments'
 
 export interface Options {
 	/** 読み仮名をカタカナで出力するか (デフォルト: `false`) */
@@ -8,41 +8,47 @@ export interface Options {
 }
 
 /**
- * ふりがなを自動で入力するためのSvelte Action
+ * ふりがなを自動で入力するためのSvelte Attachment
  *
  * @param options - オプション
  * @param options.katakana - 読み仮名をカタカナで出力するか (デフォルト: `false`)
  *
- * @returns [かなを取得する元のinput用アクション, 読み仮名を出力する先のinput用アクション]
+ * @returns [かなを取得する元のinput用アタッチメント, 読み仮名を出力する先のinput用アタッチメント]
  *
  * @example
  * ```svelte
  * <script>
  *   import { createAutoKana } from 'svelte-autokana'
- *   const [nameAction, kanaAction] = createAutoKana()
+ *   const [nameKanji, nameKana] = createAutoKana()
  * </script>
  *
- * <input use:nameAction type="text" name="name" />
- * <input use:kanaAction type="text" name="nameKana" />
+ * <input type="text" name="nameKanji" {@attach nameKanji} />
+ * <input type="text" name="nameKana" {@attach nameKana} />
  * ```
  */
-export const createAutoKana = (
+export function createAutoKana(
 	options?: Options
-): [Action<HTMLInputElement>, Action<HTMLInputElement>] => {
+): [
+	attachmentForKanjiInput: Attachment<HTMLInputElement>,
+	attachmentForKanaInput: Attachment<HTMLInputElement>,
+] {
+	const toKatakana = (matches: string[]): string[] => {
+		return matches.map((char) => {
+			return char === 'ー' ? char : String.fromCharCode(char.charCodeAt(0) + 96)
+		})
+	}
+
 	let furigana = $state('')
 
-	let converted = '' // 変換済みのかな
-	let pending = '' // 未確定のかな
+	/** 変換済みのかな */
+	let converted = ''
+
+	/** 未確定のかな */
+	let pending = ''
 
 	return [
-		// かなを取得する元のinput用アクション
+		/** かなを取得する元のinput用アタッチメント */
 		(node: HTMLInputElement) => {
-			const toKatakana = (matches: string[]): string[] => {
-				return matches.map((char) => {
-					return char === 'ー' ? char : String.fromCharCode(char.charCodeAt(0) + 96)
-				})
-			}
-
 			$effect(() => {
 				const controller = new AbortController()
 
@@ -92,14 +98,14 @@ export const createAutoKana = (
 			})
 		},
 
-		// フリガナを出力する先のinput用アクション
+		/** フリガナを出力する先のinput用アタッチメント */
 		(node: HTMLInputElement) => {
 			$effect(() => {
 				const controller = new AbortController()
 
 				node.addEventListener(
 					'input',
-					(): void => {
+					() => {
 						furigana = node.value
 						converted = node.value
 					},

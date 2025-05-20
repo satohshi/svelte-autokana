@@ -2,7 +2,7 @@
 	import { createAutoKana, type Options } from '$lib/index.svelte.js'
 
 	const options = $state<Options>({ katakana: false })
-	const [nameSource, nameKana] = createAutoKana(options)
+	const [nameKanji, nameKana] = createAutoKana(options)
 </script>
 
 <div>
@@ -13,12 +13,12 @@
 
 	<label>
 		<span>名前</span>
-		<input type="text" use:nameSource />
+		<input type="text" {@attach nameKanji} />
 	</label>
 
 	<label>
 		<span>名前（{options.katakana ? 'カナ' : 'かな'}）</span>
-		<input type="text" use:nameKana />
+		<input type="text" {@attach nameKana} />
 	</label>
 </div>
 
